@@ -1,6 +1,6 @@
 import "./App.css";
 import { lazy, Suspense } from "react";
-import { Switch, Route } from "react-router-dom";
+import { Switch, Route, Redirect } from "react-router-dom";
 import Container from "./components/Container/Container";
 import AppBar from "./components/AppBar/AppBar";
 
@@ -9,9 +9,9 @@ const MoviesPage = lazy(() => import("./components/MoviesPage/MoviesPage"));
 const MovieDetailsPage = lazy(() =>
   import("./components/MovieDetailsPage/MovieDetailsPage")
 );
-const NotFoundPage = lazy(() =>
-  import("./components/NotFoundPage/NotFoundPage")
-);
+// const NotFoundPage = lazy(() =>
+//   import("./components/NotFoundPage/NotFoundPage")
+// );
 
 function App() {
   return (
@@ -36,7 +36,7 @@ function App() {
             </Route>
 
             <Route>
-              <NotFoundPage />
+              <Redirect to={"/"} />
             </Route>
           </Switch>
         </Suspense>

@@ -1,67 +1,70 @@
 import { useState, useEffect } from "react";
-import { NavLink, useLocation, useRouteMatch } from "react-router-dom";
+import {
+  NavLink,
+  useLocation,
+  useRouteMatch,
+  useHistory,
+} from "react-router-dom";
 import api from "../../services/moviesApi";
 
 export default function MoviesPage() {
-  const [movies, setMovies] = useState([]);
-  const [searchQuery, setSearchQuery] = useState("");
-  const { url } = useRouteMatch();
-  const [request, setRequest] = useState("");
+  const history = useHistory();
   const location = useLocation();
+  let { url } = useRouteMatch();
+  const [search, setSearch] = useState("");
+  const [movies, setMovies] = useState(null);
 
-  const handleRequestChange = (event) => {
-    setSearchQuery(event.currentTarget.value.toLowerCase());
+  const heandleSearch = (e) => {
+    setSearch(e.target.value);
   };
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    setRequest(searchQuery);
+  const heandleSubmit = (e) => {
+    e.preventDefault();
+    history.push({ ...location, search: `query=${search}` });
   };
 
   useEffect(() => {
-    if (searchQuery === "") {
+    if (location.search === "") {
       return;
     }
-    const renderMoviesByQuery = () => {
-      api.fetchMoviesByQuery(request).then(setMovies);
-    };
-    renderMoviesByQuery();
-  }, [request]);
+
+    const query = new URLSearchParams(location.search).get("query");
+
+    api
+      .fetchMoviesByQuery(query)
+      .then((data) => {
+        setMovies(data.results);
+      })
+      .catch((error) => console.warn(error))
+      .finally(() => {
+        setSearch("");
+      });
+  }, [location.search]);
 
   return (
     <>
-      <form className="SearchForm" onSubmit={handleSubmit}>
+      <form action="submit" onSubmit={heandleSubmit}>
         <input
-          className="SearchForm-input"
           type="text"
-          autoComplete="off"
-          autoFocus
-          placeholder="Search movies"
-          value={searchQuery}
-          name={"searchQuery"}
-          onChange={handleRequestChange}
+          name="search"
+          value={search}
+          id="id-1"
+          onChange={heandleSearch}
         />
-        <button type="submit" className="SearchForm-button">
-          <span className="SearchForm-button-label">Search</span>
-        </button>
+        <button type="submit">Search</button>
       </form>
       {movies && (
-        <>
-          <ul>
-            {movies.map(({ title, id }) => (
+        <ul>
+          {movies.map((el) => (
+            <li key={el.id}>
               <NavLink
-                to={{
-                  pathname: `${url}/${id}`,
-                  state: {
-                    from: location.pathname,
-                  },
-                }}
+                to={{ pathname: `${url}/${el.id}`, state: { from: location } }}
               >
-                <li key={id}>{title}</li>
+                {el.original_title}
               </NavLink>
-            ))}
-          </ul>
-        </>
+            </li>
+          ))}
+        </ul>
       )}
     </>
   );

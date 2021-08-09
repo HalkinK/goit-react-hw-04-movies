@@ -31,11 +31,21 @@ function fetchMoviesTrend(page = 1) {
   return fetchMovies(trendMoviesUrl);
 }
 
-function fetchMoviesByQuery(searchQuery, page = 1) {
-  const searchQueryUrl = `${BASE_URL}/search/movie?api_key=${API_KEY}&language=en-US&page=${page}&query=${searchQuery}`;
-  return fetchMovies(searchQueryUrl);
-  // .responce.json()
-  // .then((data) => data.results);
+// function fetchMoviesByQuery(searchQuery) {
+//   const searchQueryUrl = `${BASE_URL}/search/movie?api_key=${API_KEY}&language=en-US&query=${searchQuery}`;
+//   return fetchMovies(searchQueryUrl);
+//   // .responce.json()
+//   // .then((data) => data.results);
+// }
+
+function fetchMoviesByQuery(search) {
+  return axios
+    .get(
+      `${BASE_URL}/search/movie?api_key=${API_KEY}&language=en-US&query=${search}`
+    )
+    .then((response) => {
+      return response.data;
+    });
 }
 
 // function fetchMovieDetails(movie_id) {

@@ -1,4 +1,4 @@
-import { useState, useEffect, lazy, Suspense } from "react";
+import { useState, useEffect, lazy, Suspense, useRef } from "react";
 import {
   useParams,
   Route,
@@ -20,6 +20,7 @@ export default function MovieDetailsPage() {
   const { url, path } = useRouteMatch();
   const history = useHistory();
   const location = useLocation();
+  const { current } = useRef(location.state);
 
   const [movie, setMovie] = useState({
     poster_path: null,
@@ -65,12 +66,7 @@ export default function MovieDetailsPage() {
     setIsVisibleReviews(true);
   };
 
-  const goBack = () => {
-    if (location.state && location.state.from) {
-      return history.push(location.state.from);
-    }
-    history.push("/");
-  };
+  const goBack = () => history.push(current ? current.from : "/");
 
   return (
     <>
